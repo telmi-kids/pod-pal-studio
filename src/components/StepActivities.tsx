@@ -104,15 +104,30 @@ export default function StepActivities({ onNew, onSelect }: Props) {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search activities... e.g. History Year 4"
-          className="pl-10 h-12 text-base rounded-xl border-2 border-muted focus:border-primary"
-        />
+      {/* Search Bar + Age Filter */}
+      <div className="flex gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search activities... e.g. History Year 4"
+            className="pl-10 h-12 text-base rounded-xl border-2 border-muted focus:border-primary"
+          />
+        </div>
+        <Select value={ageFilter} onValueChange={setAgeFilter}>
+          <SelectTrigger className="w-[140px] h-12 rounded-xl border-2 border-muted">
+            <SelectValue placeholder="All Ages" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Ages</SelectItem>
+            {uniqueAgeGroups.map((ag) => (
+              <SelectItem key={ag} value={ag}>
+                {ag}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Student Mode Toggle */}
