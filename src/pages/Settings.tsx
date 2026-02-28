@@ -132,7 +132,7 @@ export default function Settings() {
             </span>
             <input
               type="file"
-              accept=".txt,.md,.csv,.json,.xml"
+              accept=".txt,.md,.csv,.json,.xml,.pdf"
               multiple
               className="hidden"
               onChange={handleUpload}
