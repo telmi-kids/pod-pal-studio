@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import SectionRecorder from "@/components/SectionRecorder";
+import FinalPodcastBuilder from "@/components/FinalPodcastBuilder";
 
 interface Recording {
   id: string;
@@ -85,8 +86,15 @@ export default function ChildPreview() {
   };
 
   const handleRecordingSaved = (rec: Recording) => {
-    setSectionRecordings((prev) => ({ ...prev, [rec.section_key]: rec }));
+    setSectionRecordings((prev) => {
+      const updated = { ...prev, [rec.section_key]: rec };
+      // Clear final if a section was re-recorded
+      if (rec.section_key !== "final") delete updated["final"];
+      return updated;
+    });
   };
+
+  const ALL_SECTION_KEYS = ["introduction", "question_1", "question_2", "question_3", "goodbye"];
 
   if (loading) {
     return (
@@ -195,6 +203,14 @@ export default function ChildPreview() {
 
           {/* Goodbye */}
           {renderSection(otherSections[1], true)}
+
+          {/* Final Podcast Builder */}
+          <FinalPodcastBuilder
+            activityId={id!}
+            sectionRecordings={sectionRecordings}
+            allSectionKeys={ALL_SECTION_KEYS}
+            onFinalSaved={handleRecordingSaved}
+          />
         </div>
       </main>
     </div>
