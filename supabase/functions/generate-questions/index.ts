@@ -70,14 +70,17 @@ ${documentText ? `\nAdditional document provided by the teacher:\n${documentText
 
 Generate the introduction, 3 questions, and goodbye.`;
 
-    // Build user message content - multipart if PDF is attached
+    // Build user message content - multipart if PDFs are attached
     const userContent: any[] = [{ type: "text", text: userPromptText }];
+    // Add activity-specific PDF
     if (documentBase64) {
       userContent.push({
         type: "image_url",
         image_url: { url: `data:application/pdf;base64,${documentBase64}` },
       });
     }
+    // Add training material PDFs
+    userContent.push(...pdfParts);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
