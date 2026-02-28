@@ -114,7 +114,7 @@ export default function ChildPreview() {
     toast.success("Link copied to clipboard! 📋");
   };
 
-  const ALL_SECTION_KEYS = ["introduction", "question_1", "question_2", "question_3", "goodbye"] as const;
+  const ALL_SECTION_KEYS: string[] = ["introduction", "question_1", "question_2", "question_3", "goodbye"];
 
   if (loading) {
     return (
