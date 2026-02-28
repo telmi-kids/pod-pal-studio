@@ -168,7 +168,7 @@ export default function FinalPodcastBuilder({
     } finally {
       setIsSaving(false);
     }
-  }, [finalBlob, activityId, onFinalSaved]);
+  }, [finalBlob, activityId, onFinalSaved, studentName]);
 
   return (
     <div className="rounded-2xl border-2 border-primary bg-primary/5 p-5 space-y-4">
