@@ -40,6 +40,7 @@ const Index = () => {
     setQuestionsData(null);
     setCurrentForm(null);
     setIsViewingExisting(false);
+    setSelectedActivityId(null);
   };
 
   const handleFormSubmit = async (formData: FormData, documentText: string) => {
