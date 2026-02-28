@@ -4,6 +4,7 @@ import { ArrowLeft, Upload, Trash2, FileText, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { extractPdfText } from "@/lib/pdfUtils";
 import type { Tables } from "@/integrations/supabase/types";
 
 export default function Settings() {
@@ -25,7 +26,10 @@ export default function Settings() {
     loadMaterials();
   }, []);
 
-  const readFileText = (file: File): Promise<string> => {
+  const readFileText = async (file: File): Promise<string> => {
+    if (file.name.toLowerCase().endsWith(".pdf")) {
+      return extractPdfText(file);
+    }
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => resolve((e.target?.result as string) || "");
@@ -128,11 +132,11 @@ export default function Settings() {
               {uploading ? "Uploading..." : "Upload Training Documents"}
             </span>
             <span className="text-sm text-muted-foreground">
-              .txt, .md, .csv — text files work best
+              .txt, .md, .csv, .pdf — text and PDF files supported
             </span>
             <input
               type="file"
-              accept=".txt,.md,.csv,.json,.xml"
+              accept=".txt,.md,.csv,.json,.xml,.pdf"
               multiple
               className="hidden"
               onChange={handleUpload}
