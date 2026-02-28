@@ -67,6 +67,7 @@ export default function FinalPodcastBuilder({
   const [isSaving, setIsSaving] = useState(false);
   const [finalBlobUrl, setFinalBlobUrl] = useState<string | null>(null);
   const [finalBlob, setFinalBlob] = useState<Blob | null>(null);
+  const [studentName, setStudentName] = useState("");
 
   const recordedCount = allSectionKeys.filter((k) => sectionRecordings[k]).length;
   const allRecorded = recordedCount === allSectionKeys.length;
