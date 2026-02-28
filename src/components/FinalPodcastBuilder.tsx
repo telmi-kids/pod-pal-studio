@@ -64,6 +64,7 @@ export default function FinalPodcastBuilder({
   allSectionKeys,
   onFinalSaved,
 }: FinalPodcastBuilderProps) {
+  const { user } = useAuth();
   const [isBuilding, setIsBuilding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [finalBlobUrl, setFinalBlobUrl] = useState<string | null>(null);
