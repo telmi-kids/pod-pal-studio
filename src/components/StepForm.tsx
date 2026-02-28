@@ -18,10 +18,11 @@ interface FormData {
 interface Props {
   onSubmit: (data: FormData, documentText: string, documentBase64?: string) => void;
   isLoading: boolean;
+  initialTopic?: string;
 }
 
-export default function StepForm({ onSubmit, isLoading }: Props) {
-  const [topic, setTopic] = useState("");
+export default function StepForm({ onSubmit, isLoading, initialTopic }: Props) {
+  const [topic, setTopic] = useState(initialTopic || "");
   const [ageGroup, setAgeGroup] = useState("");
   const [genre, setGenre] = useState("");
   const [documentFile, setDocumentFile] = useState<File | null>(null);
