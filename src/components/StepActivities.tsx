@@ -66,7 +66,7 @@ export default function StepActivities({ onNew, onSelect }: Props) {
             <Plus className="mr-1 h-5 w-5" /> New
           </Button>
         </div>
-
+      </div>
 
 
 
