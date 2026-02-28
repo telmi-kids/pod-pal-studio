@@ -32,6 +32,7 @@ export type Database = {
           question_3: string | null
           question_3_audio_url: string | null
           topic: string
+          user_id: string | null
           voice_url: string | null
         }
         Insert: {
@@ -51,6 +52,7 @@ export type Database = {
           question_3?: string | null
           question_3_audio_url?: string | null
           topic: string
+          user_id?: string | null
           voice_url?: string | null
         }
         Update: {
@@ -70,6 +72,7 @@ export type Database = {
           question_3?: string | null
           question_3_audio_url?: string | null
           topic?: string
+          user_id?: string | null
           voice_url?: string | null
         }
         Relationships: []
@@ -84,6 +87,7 @@ export type Database = {
           section_key: string
           status: string
           student_name: string | null
+          user_id: string | null
         }
         Insert: {
           activity_id: string
@@ -94,6 +98,7 @@ export type Database = {
           section_key?: string
           status?: string
           student_name?: string | null
+          user_id?: string | null
         }
         Update: {
           activity_id?: string
@@ -104,6 +109,7 @@ export type Database = {
           section_key?: string
           status?: string
           student_name?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
