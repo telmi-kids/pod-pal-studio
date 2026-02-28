@@ -32,6 +32,7 @@ export default function ChildPreview() {
   const sectionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const [sectionsOpen, setSectionsOpen] = useState(true);
+  const [playlistKey, setPlaylistKey] = useState(0);
 
   const playSectionAudio = useCallback((url: string, key: string) => {
     if (playingSectionKey === key && sectionAudioRef.current) {
