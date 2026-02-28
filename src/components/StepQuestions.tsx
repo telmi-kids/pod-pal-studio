@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Pencil, Check, Save, LayoutGrid } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Pencil, Check, Save, LayoutGrid, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
