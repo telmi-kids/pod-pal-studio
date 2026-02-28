@@ -59,6 +59,38 @@ export type Database = {
         }
         Relationships: []
       }
+      recordings: {
+        Row: {
+          activity_id: string
+          created_at: string
+          id: string
+          recording_url: string
+          student_name: string | null
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          id?: string
+          recording_url: string
+          student_name?: string | null
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          id?: string
+          recording_url?: string
+          student_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recordings_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       training_materials: {
         Row: {
           content: string
