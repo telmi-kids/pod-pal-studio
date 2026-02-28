@@ -246,7 +246,7 @@ export default function ChildPreview() {
           </Collapsible>
 
           {/* Podcast Playlist */}
-          <PodcastPlaylist activityId={id!} />
+          <PodcastPlaylist activityId={id!} key={playlistKey} />
         </div>
       </main>
     </div>
