@@ -240,10 +240,21 @@ export default function FinalPodcastBuilder({
         </div>
       )}
 
-      {!allRecorded && (
+      {!allRecorded && !sectionRecordings["final"] && (
         <p className="text-sm text-muted-foreground text-center">
           Record all sections above to build your podcast!
         </p>
+      )}
+
+      {/* Previously saved final podcast */}
+      {sectionRecordings["final"] && !finalBlobUrl && (
+        <div className="space-y-3 border-t border-border pt-4">
+          <p className="text-sm font-semibold text-muted-foreground">🎧 Your saved podcast:</p>
+          <audio src={sectionRecordings["final"].recording_url} controls className="w-full rounded-lg" />
+          <p className="text-xs text-muted-foreground">
+            Saved on {new Date(sectionRecordings["final"].created_at).toLocaleString()}
+          </p>
+        </div>
       )}
     </div>
   );
