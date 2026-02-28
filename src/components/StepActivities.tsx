@@ -86,6 +86,7 @@ export default function StepActivities({ onNew, onSelect }: Props) {
             >
               <div className="text-3xl mb-2">{genreEmojis[a.genre] || "🎙️"}</div>
               <h3 className="font-bold text-base text-foreground truncate">{a.topic}</h3>
+              <p className="text-sm text-muted-foreground mt-1">Ages {a.age_group}</p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm mt-2">
                 <Clock className="h-3 w-3" />
                 <span>{new Date(a.created_at).toLocaleDateString()}</span>
