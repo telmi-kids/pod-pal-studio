@@ -25,6 +25,14 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
   const navigate = useNavigate();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [formData, setFormData] = useState<QuestionsData>(data);
+  const isExisting = !!activityId;
+
+  const closeEdit = (key: string) => {
+    setEditingField(null);
+    if (isExisting && onSave && formData[key as keyof QuestionsData] !== data[key as keyof QuestionsData]) {
+      onSave(formData);
+    }
+  };
 
   const updateField = (key: keyof QuestionsData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
