@@ -98,18 +98,59 @@ const Index = () => {
         }
       }
 
-      const { error } = await supabase.from("activities").insert({
+      const { data: inserted, error } = await supabase.from("activities").insert({
         topic: currentForm.topic,
         age_group: currentForm.ageGroup,
         genre: currentForm.genre,
         voice_url: voiceUrl,
         document_url: documentUrl,
         ...questions,
-      });
+      }).select("id").single();
 
       if (error) throw error;
 
       toast.success("Activity saved! 🎉");
+
+      // Generate voice audio if teacher recorded a voice brief
+      if (currentForm.voiceBlob && inserted?.id) {
+        toast.info("Generating teacher voice audio... 🎙️ This may take a moment.");
+        try {
+          const reader = new FileReader();
+          const voiceBase64 = await new Promise<string>((resolve, reject) => {
+            reader.onloadend = () => {
+              const base64 = (reader.result as string).split(",")[1];
+              resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(currentForm.voiceBlob!);
+          });
+
+          const { error: voiceErr } = await supabase.functions.invoke("generate-voice-audio", {
+            body: {
+              voiceBase64,
+              activityId: inserted.id,
+              sections: {
+                introduction: questions.introduction,
+                question_1: questions.question_1,
+                question_2: questions.question_2,
+                question_3: questions.question_3,
+                goodbye: questions.goodbye,
+              },
+            },
+          });
+
+          if (voiceErr) {
+            console.error("Voice generation error:", voiceErr);
+            toast.error("Voice audio generation failed, but activity was saved.");
+          } else {
+            toast.success("Teacher voice audio generated! 🎤");
+          }
+        } catch (voiceE: any) {
+          console.error("Voice generation error:", voiceE);
+          toast.error("Voice audio generation failed, but activity was saved.");
+        }
+      }
+
       goToActivities();
     } catch (e: any) {
       toast.error(e.message || "Failed to save");
