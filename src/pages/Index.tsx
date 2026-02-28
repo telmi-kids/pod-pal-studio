@@ -4,6 +4,7 @@ import StepQuestions from "@/components/StepQuestions";
 import StepActivities from "@/components/StepActivities";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
@@ -27,6 +28,7 @@ interface FormData {
 }
 
 const Index = () => {
+  const { user, signOut } = useAuth();
   const [screen, setScreen] = useState<Screen>("activities");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -106,6 +108,7 @@ const Index = () => {
         genre: currentForm.genre,
         voice_url: voiceUrl,
         document_url: documentUrl,
+        user_id: user?.id,
         ...questions,
       }).select("id").single();
 

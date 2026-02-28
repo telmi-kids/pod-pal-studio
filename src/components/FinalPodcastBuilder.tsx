@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Recording {
   id: string;
@@ -63,6 +64,7 @@ export default function FinalPodcastBuilder({
   allSectionKeys,
   onFinalSaved,
 }: FinalPodcastBuilderProps) {
+  const { user } = useAuth();
   const [isBuilding, setIsBuilding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [finalBlobUrl, setFinalBlobUrl] = useState<string | null>(null);
@@ -149,6 +151,7 @@ export default function FinalPodcastBuilder({
         recording_url: urlData.publicUrl,
         section_key: "final",
         student_name: trimmedName,
+        user_id: user?.id,
       } as any);
       if (insertErr) throw insertErr;
 

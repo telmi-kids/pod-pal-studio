@@ -3,6 +3,7 @@ import { Mic, Square, Save, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SectionRecorderProps {
   activityId: string;
@@ -12,6 +13,7 @@ interface SectionRecorderProps {
 }
 
 export default function SectionRecorder({ activityId, sectionKey, existingRecording, onSaved }: SectionRecorderProps) {
+  const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
   const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
@@ -99,6 +101,7 @@ export default function SectionRecorder({ activityId, sectionKey, existingRecord
         activity_id: activityId,
         recording_url: urlData.publicUrl,
         section_key: sectionKey,
+        user_id: user?.id,
       } as any);
       if (insertErr) throw insertErr;
 
