@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { Headphones, Loader2, Save, RotateCcw, CheckCircle2, Circle } from "lucide-react";
+import { Headphones, Loader2, Send, RotateCcw, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -66,6 +67,7 @@ export default function FinalPodcastBuilder({
   const [isSaving, setIsSaving] = useState(false);
   const [finalBlobUrl, setFinalBlobUrl] = useState<string | null>(null);
   const [finalBlob, setFinalBlob] = useState<Blob | null>(null);
+  const [studentName, setStudentName] = useState("");
 
   const recordedCount = allSectionKeys.filter((k) => sectionRecordings[k]).length;
   const allRecorded = recordedCount === allSectionKeys.length;
@@ -141,10 +143,12 @@ export default function FinalPodcastBuilder({
         .from("recordings")
         .getPublicUrl(fileName);
 
+      const trimmedName = studentName.trim() || "Student";
       const { error: insertErr } = await supabase.from("recordings").insert({
         activity_id: activityId,
         recording_url: urlData.publicUrl,
         section_key: "final",
+        student_name: trimmedName,
       } as any);
       if (insertErr) throw insertErr;
 
@@ -155,13 +159,16 @@ export default function FinalPodcastBuilder({
         section_key: "final",
       };
       onFinalSaved(newRec);
-      toast.success("Final podcast saved! 🎉");
+      setFinalBlobUrl(null);
+      setFinalBlob(null);
+      setStudentName("");
+      toast.success("Podcast submitted to playlist! 🎉");
     } catch (e: any) {
       toast.error(e.message || "Failed to save");
     } finally {
       setIsSaving(false);
     }
-  }, [finalBlob, activityId, onFinalSaved]);
+  }, [finalBlob, activityId, onFinalSaved, studentName]);
 
   return (
     <div className="rounded-2xl border-2 border-primary bg-primary/5 p-5 space-y-4">
@@ -216,14 +223,20 @@ export default function FinalPodcastBuilder({
         <div className="space-y-3">
           <p className="text-sm font-semibold text-muted-foreground">🎧 Preview your podcast:</p>
           <audio src={finalBlobUrl} controls className="w-full rounded-lg" />
+          <Input
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
+            placeholder="Enter your name"
+            className="h-12 text-base font-semibold rounded-xl"
+          />
           <div className="flex gap-2">
             <Button
               onClick={saveFinal}
-              disabled={isSaving}
+              disabled={isSaving || !studentName.trim()}
               className="flex-1 h-12 font-bold rounded-xl bg-kid-green hover:bg-kid-green/90 gap-2"
             >
-              <Save className="h-5 w-5" />
-              {isSaving ? "Saving..." : "Save Final Podcast"}
+              <Send className="h-5 w-5" />
+              {isSaving ? "Submitting..." : "Submit to Playlist"}
             </Button>
             <Button
               onClick={() => {
