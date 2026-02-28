@@ -1,10 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Play, Pause, Mic, MicOff, Square } from "lucide-react";
+import { ArrowLeft, Play, Pause, Mic, Square, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { toast } from "sonner";
+
+interface Recording {
+  id: string;
+  recording_url: string;
+  created_at: string;
+}
 
 export default function ChildPreview() {
   const { id } = useParams<{ id: string }>();
@@ -20,14 +26,26 @@ export default function ChildPreview() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
   const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
+  // Past recordings
+  const [pastRecordings, setPastRecordings] = useState<Recording[]>([]);
+
   useEffect(() => {
+    if (!id) return;
     const load = async () => {
-      if (!id) return;
-      const { data } = await supabase.from("activities").select("*").eq("id", id).single();
-      setActivity(data);
+      const [actRes, recRes] = await Promise.all([
+        supabase.from("activities").select("*").eq("id", id).single(),
+        supabase
+          .from("recordings")
+          .select("id, recording_url, created_at")
+          .eq("activity_id", id)
+          .order("created_at", { ascending: false }),
+      ]);
+      setActivity(actRes.data);
+      setPastRecordings((recRes.data as Recording[]) || []);
       setLoading(false);
     };
     load();
@@ -75,6 +93,41 @@ export default function ChildPreview() {
     setIsRecording(false);
   };
 
+  const saveRecording = async () => {
+    if (!recordingBlob || !id) return;
+    setIsSaving(true);
+    try {
+      const fileName = `recording-${id}-${Date.now()}.webm`;
+      const { error: uploadErr } = await supabase.storage
+        .from("recordings")
+        .upload(fileName, recordingBlob);
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage
+        .from("recordings")
+        .getPublicUrl(fileName);
+
+      const { error: insertErr } = await supabase.from("recordings").insert({
+        activity_id: id,
+        recording_url: urlData.publicUrl,
+      });
+      if (insertErr) throw insertErr;
+
+      // Add to list and reset
+      setPastRecordings((prev) => [
+        { id: crypto.randomUUID(), recording_url: urlData.publicUrl, created_at: new Date().toISOString() },
+        ...prev,
+      ]);
+      setRecordingBlob(null);
+      setRecordingUrl(null);
+      toast.success("Recording saved! 🎉");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save recording");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -101,7 +154,6 @@ export default function ChildPreview() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-10 bg-kid-blue/10 backdrop-blur border-b border-kid-blue/20 px-4 py-3 flex items-center gap-3">
         <Button
           variant="ghost"
@@ -188,6 +240,14 @@ export default function ChildPreview() {
                 <p className="text-kid-green font-bold text-center">✅ Episode recorded!</p>
                 <audio src={recordingUrl} controls className="w-full rounded-lg" />
                 <Button
+                  onClick={saveRecording}
+                  disabled={isSaving}
+                  className="w-full h-14 text-lg font-bold rounded-xl bg-kid-green hover:bg-kid-green/90 gap-3"
+                >
+                  <Save className="h-6 w-6" />
+                  {isSaving ? "Saving..." : "Save Recording"}
+                </Button>
+                <Button
                   onClick={startRecording}
                   variant="outline"
                   className="w-full h-12 text-base font-bold rounded-xl gap-2"
@@ -198,6 +258,21 @@ export default function ChildPreview() {
               </div>
             )}
           </div>
+
+          {/* Past recordings */}
+          {pastRecordings.length > 0 && (
+            <div className="rounded-2xl border-2 border-border bg-card p-5 space-y-4">
+              <p className="font-bold text-lg">📼 Past Recordings</p>
+              {pastRecordings.map((rec) => (
+                <div key={rec.id} className="space-y-1">
+                  <p className="text-sm text-muted-foreground font-semibold">
+                    {new Date(rec.created_at).toLocaleString()}
+                  </p>
+                  <audio src={rec.recording_url} controls className="w-full rounded-lg" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
