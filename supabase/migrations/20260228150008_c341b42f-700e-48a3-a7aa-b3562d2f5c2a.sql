@@ -1,0 +1,1 @@
+ALTER TABLE public.recordings ADD COLUMN section_key text NOT NULL DEFAULT 'general';
