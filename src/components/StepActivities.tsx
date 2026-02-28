@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Clock, Settings, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -19,6 +20,7 @@ export default function StepActivities({ onNew, onSelect }: Props) {
   const [loading, setLoading] = useState(true);
   const [studentMode, setStudentMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [ageFilter, setAgeFilter] = useState("all");
 
   useEffect(() => {
     const load = async () => {
@@ -56,11 +58,18 @@ export default function StepActivities({ onNew, onSelect }: Props) {
     }
   };
 
-  const filtered = searchQuery.trim()
-    ? activities.filter((a) =>
+  const uniqueAgeGroups = useMemo(
+    () => [...new Set(activities.map((a) => a.age_group))].sort(),
+    [activities]
+  );
+
+  const filtered = activities
+    .filter((a) => ageFilter === "all" || a.age_group === ageFilter)
+    .filter(
+      (a) =>
+        !searchQuery.trim() ||
         a.topic.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : activities;
+    );
 
   return (
     <div className="animate-bounce-in">
@@ -95,15 +104,30 @@ export default function StepActivities({ onNew, onSelect }: Props) {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search activities... e.g. History Year 4"
-          className="pl-10 h-12 text-base rounded-xl border-2 border-muted focus:border-primary"
-        />
+      {/* Search Bar + Age Filter */}
+      <div className="flex gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search activities... e.g. History Year 4"
+            className="pl-10 h-12 text-base rounded-xl border-2 border-muted focus:border-primary"
+          />
+        </div>
+        <Select value={ageFilter} onValueChange={setAgeFilter}>
+          <SelectTrigger className="w-[140px] h-12 rounded-xl border-2 border-muted">
+            <SelectValue placeholder="All Ages" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Ages</SelectItem>
+            {uniqueAgeGroups.map((ag) => (
+              <SelectItem key={ag} value={ag}>
+                {ag}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Student Mode Toggle */}
