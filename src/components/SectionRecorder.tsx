@@ -101,6 +101,7 @@ export default function SectionRecorder({ activityId, sectionKey, existingRecord
         activity_id: activityId,
         recording_url: urlData.publicUrl,
         section_key: sectionKey,
+        user_id: user?.id,
       } as any);
       if (insertErr) throw insertErr;
 

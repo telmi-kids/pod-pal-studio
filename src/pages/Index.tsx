@@ -108,6 +108,7 @@ const Index = () => {
         genre: currentForm.genre,
         voice_url: voiceUrl,
         document_url: documentUrl,
+        user_id: user?.id,
         ...questions,
       }).select("id").single();
 

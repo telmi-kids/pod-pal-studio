@@ -151,6 +151,7 @@ export default function FinalPodcastBuilder({
         recording_url: urlData.publicUrl,
         section_key: "final",
         student_name: trimmedName,
+        user_id: user?.id,
       } as any);
       if (insertErr) throw insertErr;
 
