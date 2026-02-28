@@ -43,17 +43,21 @@ export default function StepActivities({ onNew, onSelect }: Props) {
 
   return (
     <div className="animate-bounce-in">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold text-foreground">🎧 My Activities</h1>
-        <p className="text-muted-foreground mt-2 text-lg">Tap on an activity to see your questions!</p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-foreground">🎧 Activity Bank</h1>
+          <p className="text-muted-foreground mt-1 text-base">Your saved podcast activities</p>
+        </div>
+        <Button
+          onClick={onNew}
+          className="h-12 px-5 text-base font-bold rounded-xl bg-primary hover:bg-primary/90"
+        >
+          <Plus className="mr-1 h-5 w-5" /> New
+        </Button>
       </div>
 
-      <Button
-        onClick={onNew}
-        className="w-full h-16 text-xl font-bold rounded-xl bg-primary hover:bg-primary/90 mb-6"
-      >
-        <Plus className="mr-2 h-6 w-6" /> New Podcast
-      </Button>
+
+
 
       {loading ? (
         <div className="text-center text-muted-foreground text-lg py-12">Loading activities...</div>
