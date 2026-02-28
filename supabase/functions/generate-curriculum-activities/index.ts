@@ -18,7 +18,8 @@ serve(async (req) => {
 Given a curriculum document, generate exactly 10 distinct podcast activities covering key topics from the curriculum.
 Each activity should have a unique topic, an appropriate genre, an introduction prompt, 3 questions, and a goodbye prompt.
 The introduction and goodbye should be instructions directed at the child podcaster (not scripts to read).
-Keep language age-appropriate for ${ageGroup}. Make questions engaging and open-ended.`;
+Keep language age-appropriate for ${ageGroup}. Make questions engaging and open-ended.
+IMPORTANT: Do NOT include the age group or year group in the topic title. Use clean, descriptive topic names only (e.g. "Ancient Egypt" not "Ancient Egypt - Year 4").`;
 
     const userContent: any[] = [
       { type: "text", text: `Age Group: ${ageGroup}\n\nGenerate 10 podcast activities from the following curriculum.${curriculumText ? `\n\nCurriculum content:\n${curriculumText}` : ""}` },
