@@ -132,11 +132,11 @@ export default function Settings() {
               {uploading ? "Uploading..." : "Upload Training Documents"}
             </span>
             <span className="text-sm text-muted-foreground">
-              .txt, .md, .csv — text files work best
+              .txt, .md, .csv, .pdf — text and PDF files supported
             </span>
             <input
               type="file"
-              accept=".txt,.md,.csv,.json,.xml"
+              accept=".txt,.md,.csv,.json,.xml,.pdf"
               multiple
               className="hidden"
               onChange={handleUpload}
