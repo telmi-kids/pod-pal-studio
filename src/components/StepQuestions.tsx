@@ -18,6 +18,7 @@ interface Props {
   onSave?: (data: QuestionsData) => void;
   onBack: () => void;
   isSaving: boolean;
+  activityId?: string;
 }
 
 export default function StepQuestions({ topic, data, onSave, onBack, isSaving }: Props) {
