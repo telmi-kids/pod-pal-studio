@@ -89,6 +89,16 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
           </Button>
         )}
       </div>
+
+      {activityId && (
+        <Button
+          onClick={() => navigate(`/preview/${activityId}`)}
+          className="w-full h-14 text-lg rounded-xl font-bold bg-kid-blue hover:bg-kid-blue/90 gap-2"
+        >
+          <Eye className="h-5 w-5" />
+          Open Student Preview
+        </Button>
+      )}
     </div>
   );
 }
