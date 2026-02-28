@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Clock, Settings, Search } from "lucide-react";
+import { Plus, Clock, Settings, Search, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -168,8 +169,19 @@ export default function StepActivities({ onNew, onSelect }: Props) {
             <button
               key={a.id}
               onClick={() => handleCardClick(a)}
-              className={`p-5 rounded-2xl border-2 text-left transition-all hover:scale-105 active:scale-95 ${cardColors[i % cardColors.length]}`}
+              className={`relative p-5 rounded-2xl border-2 text-left transition-all hover:scale-105 active:scale-95 ${cardColors[i % cardColors.length]}`}
             >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(`${window.location.origin}/preview/${a.id}`);
+                  toast.success("Link copied! 📋");
+                }}
+                className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-foreground/10 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Copy link"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
               <div className="text-3xl mb-2">{genreEmojis[a.genre] || "🎙️"}</div>
               <h3 className="font-bold text-base text-foreground truncate">{a.topic}</h3>
               <p className="text-sm text-muted-foreground mt-1">Ages {a.age_group}</p>
