@@ -21,7 +21,8 @@ interface Props {
   activityId?: string;
 }
 
-export default function StepQuestions({ topic, data, onSave, onBack, isSaving }: Props) {
+export default function StepQuestions({ topic, data, onSave, onBack, isSaving, activityId }: Props) {
+  const navigate = useNavigate();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [formData, setFormData] = useState<QuestionsData>(data);
 
