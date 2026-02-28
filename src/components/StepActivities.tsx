@@ -20,6 +20,7 @@ export default function StepActivities({ onNew, onSelect }: Props) {
   const [loading, setLoading] = useState(true);
   const [studentMode, setStudentMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [ageFilter, setAgeFilter] = useState("all");
 
   useEffect(() => {
     const load = async () => {
