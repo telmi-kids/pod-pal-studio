@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Clock, Settings, Search, Share2 } from "lucide-react";
+import { Plus, Clock, Settings, Search, Share2, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface Props {
@@ -17,11 +19,15 @@ interface Props {
 
 export default function StepActivities({ onNew, onSelect }: Props) {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [activities, setActivities] = useState<Tables<"activities">[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentMode, setStudentMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [ageFilter, setAgeFilter] = useState("all");
+
+  const userName = user?.user_metadata?.full_name || user?.email || "User";
+  const avatarUrl = user?.user_metadata?.avatar_url;
 
   useEffect(() => {
     const load = async () => {
@@ -74,6 +80,26 @@ export default function StepActivities({ onNew, onSelect }: Props) {
 
   return (
     <div className="animate-bounce-in">
+      {/* Profile bar */}
+      <div className="flex items-center gap-3 mb-6 p-3 rounded-xl border-2 border-border bg-card">
+        <Avatar className="h-9 w-9">
+          {avatarUrl && <AvatarImage src={avatarUrl} alt={userName} />}
+          <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+            {userName.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+        <span className="font-bold text-sm text-foreground truncate flex-1">{userName}</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={signOut}
+          className="rounded-full text-muted-foreground hover:text-destructive gap-1.5 shrink-0"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="text-xs font-semibold">Sign out</span>
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-extrabold text-foreground">
