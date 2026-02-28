@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { topic, ageGroup, genre, documentText } = await req.json();
+    const { topic, ageGroup, genre, documentText, documentBase64 } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -40,12 +40,21 @@ Given a podcast topic, genre, and context materials, generate:
 Keep language simple and age-appropriate. Make questions engaging and open-ended.
 ${trainingContext ? `\nYou have the following training materials as background knowledge. Use them to inform your questions where relevant:\n\n${trainingContext}` : ""}`;
 
-    const userPrompt = `Topic: ${topic}
+    const userPromptText = `Topic: ${topic}
 Genre: ${genre}
 Age Group: ${ageGroup}
 ${documentText ? `\nAdditional document provided by the teacher:\n${documentText}` : ""}
 
 Generate the introduction, 3 questions, and goodbye.`;
+
+    // Build user message content - multipart if PDF is attached
+    const userContent: any[] = [{ type: "text", text: userPromptText }];
+    if (documentBase64) {
+      userContent.push({
+        type: "image_url",
+        image_url: { url: `data:application/pdf;base64,${documentBase64}` },
+      });
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -57,7 +66,7 @@ Generate the introduction, 3 questions, and goodbye.`;
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
+          { role: "user", content: userContent },
         ],
         tools: [
           {

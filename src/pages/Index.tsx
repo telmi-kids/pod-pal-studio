@@ -43,7 +43,7 @@ const Index = () => {
     setSelectedActivityId(null);
   };
 
-  const handleFormSubmit = async (formData: FormData, documentText: string) => {
+  const handleFormSubmit = async (formData: FormData, documentText: string, documentBase64?: string) => {
     setIsLoading(true);
     setCurrentForm(formData);
 
@@ -54,6 +54,7 @@ const Index = () => {
           ageGroup: formData.ageGroup,
           genre: formData.genre,
           documentText,
+          documentBase64,
         },
       });
 
