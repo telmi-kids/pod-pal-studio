@@ -203,6 +203,14 @@ export default function ChildPreview() {
 
           {/* Goodbye */}
           {renderSection(otherSections[1], true)}
+
+          {/* Final Podcast Builder */}
+          <FinalPodcastBuilder
+            activityId={id!}
+            sectionRecordings={sectionRecordings}
+            allSectionKeys={ALL_SECTION_KEYS}
+            onFinalSaved={handleRecordingSaved}
+          />
         </div>
       </main>
     </div>
