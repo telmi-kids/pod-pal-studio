@@ -56,12 +56,8 @@ export default function StepActivities({ onNew, onSelect }: Props) {
         </Button>
       </div>
 
-      <Button
-        onClick={onNew}
-        className="w-full h-16 text-xl font-bold rounded-xl bg-primary hover:bg-primary/90 mb-6"
-      >
-        <Plus className="mr-2 h-6 w-6" /> New Podcast
-      </Button>
+
+
 
       {loading ? (
         <div className="text-center text-muted-foreground text-lg py-12">Loading activities...</div>
