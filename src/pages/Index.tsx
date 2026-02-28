@@ -28,6 +28,7 @@ interface FormData {
 }
 
 const Index = () => {
+  const { user, signOut } = useAuth();
   const [screen, setScreen] = useState<Screen>("activities");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
