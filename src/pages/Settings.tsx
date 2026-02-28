@@ -26,7 +26,10 @@ export default function Settings() {
     loadMaterials();
   }, []);
 
-  const readFileText = (file: File): Promise<string> => {
+  const readFileText = async (file: File): Promise<string> => {
+    if (file.name.toLowerCase().endsWith(".pdf")) {
+      return extractPdfText(file);
+    }
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => resolve((e.target?.result as string) || "");
