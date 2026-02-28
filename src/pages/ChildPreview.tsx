@@ -32,6 +32,7 @@ export default function ChildPreview() {
   const sectionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const [sectionsOpen, setSectionsOpen] = useState(true);
+  const [playlistKey, setPlaylistKey] = useState(0);
 
   const playSectionAudio = useCallback((url: string, key: string) => {
     if (playingSectionKey === key && sectionAudioRef.current) {
@@ -91,10 +92,20 @@ export default function ChildPreview() {
     setSectionRecordings((prev) => {
       const updated = { ...prev, [rec.section_key]: rec };
       if (rec.section_key !== "final") delete updated["final"];
+
+      // Auto-collapse when all sections are recorded
+      if (rec.section_key !== "final") {
+        const allDone = ALL_SECTION_KEYS.every((k) => updated[k]);
+        if (allDone) setSectionsOpen(false);
+      }
+
       return updated;
     });
-    // Collapse sections when final is saved
-    if (rec.section_key === "final") setSectionsOpen(false);
+    // Collapse sections & refresh playlist when final is saved
+    if (rec.section_key === "final") {
+      setSectionsOpen(false);
+      setPlaylistKey((k) => k + 1);
+    }
   };
 
   const copyLink = () => {
@@ -103,7 +114,7 @@ export default function ChildPreview() {
     toast.success("Link copied to clipboard! 📋");
   };
 
-  const ALL_SECTION_KEYS = ["introduction", "question_1", "question_2", "question_3", "goodbye"];
+  const ALL_SECTION_KEYS: string[] = ["introduction", "question_1", "question_2", "question_3", "goodbye"];
 
   if (loading) {
     return (
@@ -235,7 +246,7 @@ export default function ChildPreview() {
           </Collapsible>
 
           {/* Podcast Playlist */}
-          <PodcastPlaylist activityId={id!} />
+          <PodcastPlaylist activityId={id!} key={playlistKey} />
         </div>
       </main>
     </div>
