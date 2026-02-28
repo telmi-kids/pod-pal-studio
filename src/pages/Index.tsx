@@ -33,6 +33,7 @@ const Index = () => {
   const [questionsData, setQuestionsData] = useState<QuestionsData | null>(null);
   const [currentForm, setCurrentForm] = useState<FormData | null>(null);
   const [isViewingExisting, setIsViewingExisting] = useState(false);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
   const goToActivities = () => {
     setScreen("activities");
