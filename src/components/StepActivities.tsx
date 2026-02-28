@@ -58,11 +58,18 @@ export default function StepActivities({ onNew, onSelect }: Props) {
     }
   };
 
-  const filtered = searchQuery.trim()
-    ? activities.filter((a) =>
+  const uniqueAgeGroups = useMemo(
+    () => [...new Set(activities.map((a) => a.age_group))].sort(),
+    [activities]
+  );
+
+  const filtered = activities
+    .filter((a) => ageFilter === "all" || a.age_group === ageFilter)
+    .filter(
+      (a) =>
+        !searchQuery.trim() ||
         a.topic.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : activities;
+    );
 
   return (
     <div className="animate-bounce-in">
