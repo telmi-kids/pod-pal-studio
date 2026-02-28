@@ -11,6 +11,7 @@ interface Props {
 }
 
 export default function StepActivities({ onNew, onSelect }: Props) {
+  const navigate = useNavigate();
   const [activities, setActivities] = useState<Tables<"activities">[]>([]);
   const [loading, setLoading] = useState(true);
 
