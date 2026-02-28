@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Clock, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
