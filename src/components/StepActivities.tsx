@@ -1,0 +1,84 @@
+import { useEffect, useState } from "react";
+import { Plus, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+
+interface Props {
+  onNew: () => void;
+  onSelect: (activity: Tables<"activities">) => void;
+}
+
+export default function StepActivities({ onNew, onSelect }: Props) {
+  const [activities, setActivities] = useState<Tables<"activities">[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("activities")
+        .select("*")
+        .order("created_at", { ascending: false });
+      setActivities(data || []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const genreEmojis: Record<string, string> = {
+    education: "📚",
+    storytelling: "📖",
+    science: "🔬",
+    adventure: "🗺️",
+    comedy: "😂",
+    music: "🎵",
+  };
+
+  const cardColors = [
+    "border-kid-blue bg-kid-blue/10",
+    "border-kid-pink bg-kid-pink/10",
+    "border-kid-green bg-kid-green/10",
+    "border-accent bg-accent/10",
+  ];
+
+  return (
+    <div className="animate-bounce-in">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-extrabold text-foreground">🎧 My Activities</h1>
+        <p className="text-muted-foreground mt-2 text-lg">Tap on an activity to see your questions!</p>
+      </div>
+
+      <Button
+        onClick={onNew}
+        className="w-full h-16 text-xl font-bold rounded-xl bg-primary hover:bg-primary/90 mb-6"
+      >
+        <Plus className="mr-2 h-6 w-6" /> New Podcast
+      </Button>
+
+      {loading ? (
+        <div className="text-center text-muted-foreground text-lg py-12">Loading activities...</div>
+      ) : activities.length === 0 ? (
+        <div className="text-center text-muted-foreground text-lg py-12">
+          No activities yet. Create your first podcast! 🎙️
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          {activities.map((a, i) => (
+            <button
+              key={a.id}
+              onClick={() => onSelect(a)}
+              className={`p-5 rounded-2xl border-2 text-left transition-all hover:scale-105 active:scale-95 ${cardColors[i % cardColors.length]}`}
+            >
+              <div className="text-3xl mb-2">{genreEmojis[a.genre] || "🎙️"}</div>
+              <h3 className="font-bold text-base text-foreground truncate">{a.topic}</h3>
+              <div className="flex items-center gap-1 text-muted-foreground text-sm mt-2">
+                <Clock className="h-3 w-3" />
+                <span>{new Date(a.created_at).toLocaleDateString()}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
