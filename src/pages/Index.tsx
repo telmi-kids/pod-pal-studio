@@ -172,7 +172,6 @@ const Index = () => {
               isSaving={isSaving}
               activityId={selectedActivityId || undefined}
             />
-            />
           )}
           {screen === "activities" && (
             <StepActivities
