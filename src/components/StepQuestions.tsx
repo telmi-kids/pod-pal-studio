@@ -25,6 +25,14 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
   const navigate = useNavigate();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [formData, setFormData] = useState<QuestionsData>(data);
+  const isExisting = !!activityId;
+
+  const closeEdit = (key: string) => {
+    setEditingField(null);
+    if (isExisting && onSave && formData[key as keyof QuestionsData] !== data[key as keyof QuestionsData]) {
+      onSave(formData);
+    }
+  };
 
   const updateField = (key: keyof QuestionsData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -53,7 +61,7 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setEditingField(editingField === key ? null : key)}
+                onClick={() => editingField === key ? closeEdit(key) : setEditingField(key)}
                 className="rounded-full"
               >
                 {editingField === key ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
@@ -78,7 +86,7 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
           <LayoutGrid className="h-5 w-5" />
           Activities
         </Button>
-        {onSave && (
+        {onSave && !isExisting && (
           <Button
             onClick={() => onSave(formData)}
             disabled={isSaving}
@@ -87,6 +95,9 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
             <Save className="mr-2 h-5 w-5" />
             {isSaving ? "Saving..." : "Save Activity"}
           </Button>
+        )}
+        {isSaving && isExisting && (
+          <span className="text-sm text-muted-foreground font-semibold self-center">Saving...</span>
         )}
       </div>
 
