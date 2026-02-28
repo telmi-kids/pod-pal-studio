@@ -92,10 +92,20 @@ export default function ChildPreview() {
     setSectionRecordings((prev) => {
       const updated = { ...prev, [rec.section_key]: rec };
       if (rec.section_key !== "final") delete updated["final"];
+
+      // Auto-collapse when all sections are recorded
+      if (rec.section_key !== "final") {
+        const allDone = ALL_SECTION_KEYS.every((k) => updated[k]);
+        if (allDone) setSectionsOpen(false);
+      }
+
       return updated;
     });
-    // Collapse sections when final is saved
-    if (rec.section_key === "final") setSectionsOpen(false);
+    // Collapse sections & refresh playlist when final is saved
+    if (rec.section_key === "final") {
+      setSectionsOpen(false);
+      setPlaylistKey((k) => k + 1);
+    }
   };
 
   const copyLink = () => {
