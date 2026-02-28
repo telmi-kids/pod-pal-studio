@@ -222,9 +222,21 @@ export default function ChildPreview() {
           )}
 
           {/* Questions */}
-          {sections.map(({ label, text, color }, i) => (
-            <div key={i} className={`rounded-xl border-2 p-4 ${color}`}>
-              <span className="font-bold text-lg">{label}</span>
+          {sections.map(({ key, label, text, color, audioUrl }) => (
+            <div key={key} className={`rounded-xl border-2 p-4 ${color}`}>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-lg">{label}</span>
+                {audioUrl && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => playSectionAudio(audioUrl, key)}
+                    className={`rounded-full h-9 w-9 p-0 ${playingSectionKey === key ? "text-primary animate-pulse" : "text-muted-foreground"}`}
+                  >
+                    <Volume2 className="h-5 w-5" />
+                  </Button>
+                )}
+              </div>
               <p className="text-base text-foreground/80 leading-relaxed mt-2">{text}</p>
             </div>
           ))}
