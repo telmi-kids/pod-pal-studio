@@ -13,6 +13,7 @@ interface SectionRecorderProps {
 }
 
 export default function SectionRecorder({ activityId, sectionKey, existingRecording, onSaved }: SectionRecorderProps) {
+  const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
   const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
