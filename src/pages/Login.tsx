@@ -1,19 +1,29 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { lovable } from "@/integrations/lovable/index";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  if (!authLoading && user) {
+    navigate("/", { replace: true });
+    return null;
+  }
 
   const signIn = async () => {
     setLoading(true);
-    const { error } = await lovable.auth.signInWithOAuth("google", {
+    const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (error) {
-      toast.error(error.message || "Sign in failed");
+    if (result.error) {
+      toast.error(result.error.message || "Sign in failed");
       setLoading(false);
     }
   };
