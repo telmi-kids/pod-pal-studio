@@ -133,6 +133,7 @@ const Index = () => {
       goodbye: activity.goodbye || "",
     });
     setIsViewingExisting(true);
+    setSelectedActivityId(activity.id);
     setScreen("questions");
   };
 
