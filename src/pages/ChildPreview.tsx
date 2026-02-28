@@ -188,13 +188,13 @@ export default function ChildPreview() {
           )}
 
           {/* Introduction */}
-          {renderSection(otherSections[0], false)}
+          {renderSection(otherSections[0], true)}
 
           {/* Questions with recorders */}
           {questionSections.map((s) => renderSection(s, true))}
 
           {/* Goodbye */}
-          {renderSection(otherSections[1], false)}
+          {renderSection(otherSections[1], true)}
         </div>
       </main>
     </div>

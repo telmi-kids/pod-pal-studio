@@ -56,11 +56,11 @@ serve(async (req) => {
 
     const systemPrompt = `You are a friendly podcast coach for kids aged ${ageGroup}. 
 Given a podcast topic, genre, and context materials, generate:
-1. A short, fun introduction paragraph (2-3 sentences)
-2. Exactly 3 interesting questions to ask the podcaster
-3. A short, cheerful goodbye message (1-2 sentences)
+1. An introduction prompt — this tells the podcaster (the child) to introduce themselves and the topic to the audience. For younger kids (5-7), keep it simple like "Say hello and tell us your name and what your podcast is about!" For older kids (10-12), make it more sophisticated like "Welcome your listeners, introduce yourself, and give a brief overview of today's topic and why it matters."
+2. Exactly 3 interesting questions for the podcaster to answer
+3. A goodbye prompt — this tells the podcaster to wrap up and thank the audience. For younger kids, keep it simple like "Say goodbye and thank you to everyone listening!" For older kids, make it richer like "Summarise what you discussed, thank your audience for tuning in, and tease what might come next."
 
-Keep language simple and age-appropriate. Make questions engaging and open-ended.
+Keep language simple and age-appropriate for ${ageGroup}. Make questions engaging and open-ended. The introduction and goodbye should be written as instructions/prompts directed at the child podcaster, not as scripts to read verbatim.
 ${trainingContext ? `\nYou have the following training materials as background knowledge. Use them to inform your questions where relevant:\n\n${trainingContext}` : ""}`;
 
     const userPromptText = `Topic: ${topic}
@@ -103,11 +103,11 @@ Generate the introduction, 3 questions, and goodbye.`;
               parameters: {
                 type: "object",
                 properties: {
-                  introduction: { type: "string", description: "A fun intro paragraph" },
-                  question_1: { type: "string", description: "First question" },
-                  question_2: { type: "string", description: "Second question" },
-                  question_3: { type: "string", description: "Third question" },
-                  goodbye: { type: "string", description: "A cheerful goodbye" },
+                  introduction: { type: "string", description: "A prompt telling the child podcaster to introduce themselves and the topic" },
+                  question_1: { type: "string", description: "First question for the podcaster to answer" },
+                  question_2: { type: "string", description: "Second question for the podcaster to answer" },
+                  question_3: { type: "string", description: "Third question for the podcaster to answer" },
+                  goodbye: { type: "string", description: "A prompt telling the child podcaster to say goodbye and thank the audience" },
                 },
                 required: ["introduction", "question_1", "question_2", "question_3", "goodbye"],
                 additionalProperties: false,
