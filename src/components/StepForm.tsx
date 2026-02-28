@@ -16,7 +16,7 @@ interface FormData {
 }
 
 interface Props {
-  onSubmit: (data: FormData, documentText: string) => void;
+  onSubmit: (data: FormData, documentText: string, documentBase64?: string) => void;
   isLoading: boolean;
 }
 
