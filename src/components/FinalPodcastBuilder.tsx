@@ -223,14 +223,20 @@ export default function FinalPodcastBuilder({
         <div className="space-y-3">
           <p className="text-sm font-semibold text-muted-foreground">🎧 Preview your podcast:</p>
           <audio src={finalBlobUrl} controls className="w-full rounded-lg" />
+          <Input
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
+            placeholder="Enter your name"
+            className="h-12 text-base font-semibold rounded-xl"
+          />
           <div className="flex gap-2">
             <Button
               onClick={saveFinal}
-              disabled={isSaving}
+              disabled={isSaving || !studentName.trim()}
               className="flex-1 h-12 font-bold rounded-xl bg-kid-green hover:bg-kid-green/90 gap-2"
             >
-              <Save className="h-5 w-5" />
-              {isSaving ? "Saving..." : "Save Final Podcast"}
+              <Send className="h-5 w-5" />
+              {isSaving ? "Submitting..." : "Submit to Playlist"}
             </Button>
             <Button
               onClick={() => {

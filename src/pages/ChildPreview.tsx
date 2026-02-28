@@ -101,10 +101,12 @@ export default function ChildPreview() {
 
       return updated;
     });
-    // Collapse sections & refresh playlist when final is saved
+    // Reset everything when final is saved so next student can start fresh
     if (rec.section_key === "final") {
-      setSectionsOpen(false);
+      setSectionRecordings({});
+      setSectionsOpen(true);
       setPlaylistKey((k) => k + 1);
+      return;
     }
   };
 
