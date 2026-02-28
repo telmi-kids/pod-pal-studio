@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Clock, Settings } from "lucide-react";
+import { Plus, Clock, Settings, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface Props {
-  onNew: () => void;
+  onNew: (initialTopic?: string) => void;
   onSelect: (activity: Tables<"activities">) => void;
 }
 
@@ -17,6 +18,7 @@ export default function StepActivities({ onNew, onSelect }: Props) {
   const [activities, setActivities] = useState<Tables<"activities">[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentMode, setStudentMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -54,6 +56,12 @@ export default function StepActivities({ onNew, onSelect }: Props) {
     }
   };
 
+  const filtered = searchQuery.trim()
+    ? activities.filter((a) =>
+        a.topic.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : activities;
+
   return (
     <div className="animate-bounce-in">
       <div className="flex items-center justify-between mb-8">
@@ -77,7 +85,7 @@ export default function StepActivities({ onNew, onSelect }: Props) {
                 <Settings className="h-5 w-5" />
               </Button>
               <Button
-                onClick={onNew}
+                onClick={() => onNew()}
                 className="h-12 px-5 text-base font-bold rounded-xl bg-primary hover:bg-primary/90"
               >
                 <Plus className="mr-1 h-5 w-5" /> New
@@ -85,6 +93,17 @@ export default function StepActivities({ onNew, onSelect }: Props) {
             </>
           )}
         </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search activities... e.g. History Year 4"
+          className="pl-10 h-12 text-base rounded-xl border-2 border-muted focus:border-primary"
+        />
       </div>
 
       {/* Student Mode Toggle */}
@@ -101,13 +120,27 @@ export default function StepActivities({ onNew, onSelect }: Props) {
 
       {loading ? (
         <div className="text-center text-muted-foreground text-lg py-12">Loading activities...</div>
-      ) : activities.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="text-center text-muted-foreground text-lg py-12">
-          No activities yet. Create your first podcast! 🎙️
+          {searchQuery.trim() ? (
+            <div className="space-y-4">
+              <p>No activities match "{searchQuery}" 🔍</p>
+              {!studentMode && (
+                <Button
+                  onClick={() => onNew(searchQuery.trim())}
+                  className="h-12 px-6 text-base font-bold rounded-xl bg-primary hover:bg-primary/90"
+                >
+                  <Plus className="mr-1 h-5 w-5" /> Create "{searchQuery.trim()}"
+                </Button>
+              )}
+            </div>
+          ) : (
+            "No activities yet. Create your first podcast! 🎙️"
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {activities.map((a, i) => (
+          {filtered.map((a, i) => (
             <button
               key={a.id}
               onClick={() => handleCardClick(a)}

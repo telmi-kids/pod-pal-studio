@@ -4,7 +4,7 @@ import StepQuestions from "@/components/StepQuestions";
 import StepActivities from "@/components/StepActivities";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, LayoutGrid } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -34,6 +34,7 @@ const Index = () => {
   const [currentForm, setCurrentForm] = useState<FormData | null>(null);
   const [isViewingExisting, setIsViewingExisting] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [initialTopic, setInitialTopic] = useState<string | undefined>();
 
   const goToActivities = () => {
     setScreen("activities");
@@ -41,6 +42,7 @@ const Index = () => {
     setCurrentForm(null);
     setIsViewingExisting(false);
     setSelectedActivityId(null);
+    setInitialTopic(undefined);
   };
 
   const handleFormSubmit = async (formData: FormData, documentText: string, documentBase64?: string) => {
@@ -111,7 +113,6 @@ const Index = () => {
 
       toast.success("Activity saved! 🎉");
 
-      // Generate voice audio if teacher recorded a voice brief
       if (currentForm.voiceBlob && inserted?.id) {
         toast.info("Generating teacher voice audio... 🎙️ This may take a moment.");
         try {
@@ -159,6 +160,26 @@ const Index = () => {
     }
   };
 
+  const handleUpdateActivity = async (questions: QuestionsData) => {
+    if (!selectedActivityId) return;
+    setIsSaving(true);
+
+    try {
+      const { error } = await supabase
+        .from("activities")
+        .update(questions)
+        .eq("id", selectedActivityId);
+
+      if (error) throw error;
+      toast.success("Activity updated! ✅");
+      goToActivities();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to update");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSelectActivity = (activity: Tables<"activities">) => {
     setCurrentForm({
       topic: activity.topic,
@@ -181,7 +202,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top nav bar */}
       {screen !== "activities" && (
         <header className="sticky top-0 z-10 bg-card/80 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
           <Button
@@ -203,13 +223,13 @@ const Index = () => {
       <main className="flex items-start justify-center p-4 pt-6">
         <div className="w-full max-w-lg">
           {screen === "form" && (
-            <StepForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+            <StepForm onSubmit={handleFormSubmit} isLoading={isLoading} initialTopic={initialTopic} />
           )}
           {screen === "questions" && questionsData && currentForm && (
             <StepQuestions
               topic={currentForm.topic}
               data={questionsData}
-              onSave={isViewingExisting ? undefined : handleSave}
+              onSave={isViewingExisting ? handleUpdateActivity : handleSave}
               onBack={goToActivities}
               isSaving={isSaving}
               activityId={selectedActivityId || undefined}
@@ -217,7 +237,11 @@ const Index = () => {
           )}
           {screen === "activities" && (
             <StepActivities
-              onNew={() => { setIsViewingExisting(false); setScreen("form"); }}
+              onNew={(topic?: string) => {
+                setIsViewingExisting(false);
+                setInitialTopic(topic);
+                setScreen("form");
+              }}
               onSelect={handleSelectActivity}
             />
           )}
