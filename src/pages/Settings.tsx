@@ -42,8 +42,9 @@ export default function Settings() {
 
     for (const file of Array.from(files)) {
       try {
-        // Read text content
-        const content = await readFileText(file);
+        const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+        // Only extract text for non-PDF files; PDFs contain binary data that can't be stored as text
+        const content = isPdf ? "" : await readFileText(file);
 
         // Upload file to storage
         const fileName = `${Date.now()}-${file.name}`;
@@ -57,7 +58,7 @@ export default function Settings() {
           .from("training-materials")
           .getPublicUrl(fileName);
 
-        // Save to database with extracted text
+        // Save to database with extracted text (empty for PDFs)
         const { error: dbError } = await supabase.from("training_materials").insert({
           file_name: file.name,
           file_url: urlData.publicUrl,
