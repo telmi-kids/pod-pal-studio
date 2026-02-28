@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-voice-audio]
 verify_jwt = false
+
+[functions.generate-curriculum-activities]
+verify_jwt = false
