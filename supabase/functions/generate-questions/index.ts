@@ -103,11 +103,11 @@ Generate the introduction, 3 questions, and goodbye.`;
               parameters: {
                 type: "object",
                 properties: {
-                  introduction: { type: "string", description: "A fun intro paragraph" },
-                  question_1: { type: "string", description: "First question" },
-                  question_2: { type: "string", description: "Second question" },
-                  question_3: { type: "string", description: "Third question" },
-                  goodbye: { type: "string", description: "A cheerful goodbye" },
+                  introduction: { type: "string", description: "A prompt telling the child podcaster to introduce themselves and the topic" },
+                  question_1: { type: "string", description: "First question for the podcaster to answer" },
+                  question_2: { type: "string", description: "Second question for the podcaster to answer" },
+                  question_3: { type: "string", description: "Third question for the podcaster to answer" },
+                  goodbye: { type: "string", description: "A prompt telling the child podcaster to say goodbye and thank the audience" },
                 },
                 required: ["introduction", "question_1", "question_2", "question_3", "goodbye"],
                 additionalProperties: false,
