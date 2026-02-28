@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { Headphones, Loader2, Save, RotateCcw, CheckCircle2, Circle } from "lucide-react";
+import { Headphones, Loader2, Send, RotateCcw, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
