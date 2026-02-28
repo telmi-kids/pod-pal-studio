@@ -36,6 +36,7 @@ const Index = () => {
   const [currentForm, setCurrentForm] = useState<FormData | null>(null);
   const [isViewingExisting, setIsViewingExisting] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [selectedActivityUserId, setSelectedActivityUserId] = useState<string | null>(null);
   const [initialTopic, setInitialTopic] = useState<string | undefined>();
 
   const goToActivities = () => {
@@ -44,6 +45,7 @@ const Index = () => {
     setCurrentForm(null);
     setIsViewingExisting(false);
     setSelectedActivityId(null);
+    setSelectedActivityUserId(null);
     setInitialTopic(undefined);
   };
 
@@ -200,6 +202,7 @@ const Index = () => {
     });
     setIsViewingExisting(true);
     setSelectedActivityId(activity.id);
+    setSelectedActivityUserId(activity.user_id);
     setScreen("questions");
   };
 
@@ -236,6 +239,7 @@ const Index = () => {
               onBack={goToActivities}
               isSaving={isSaving}
               activityId={selectedActivityId || undefined}
+              activityUserId={selectedActivityUserId}
             />
           )}
           {screen === "activities" && (
