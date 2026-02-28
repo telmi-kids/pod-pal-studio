@@ -33,6 +33,30 @@ export default function ChildPreview() {
   // Past recordings
   const [pastRecordings, setPastRecordings] = useState<Recording[]>([]);
 
+  // Section audio playback (TTS)
+  const [playingSectionKey, setPlayingSectionKey] = useState<string | null>(null);
+  const sectionAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const playSectionAudio = useCallback((url: string, key: string) => {
+    // Stop current if playing same
+    if (playingSectionKey === key && sectionAudioRef.current) {
+      sectionAudioRef.current.pause();
+      sectionAudioRef.current = null;
+      setPlayingSectionKey(null);
+      return;
+    }
+    // Stop previous
+    if (sectionAudioRef.current) {
+      sectionAudioRef.current.pause();
+      sectionAudioRef.current = null;
+    }
+    const audio = new Audio(url);
+    audio.onended = () => { setPlayingSectionKey(null); sectionAudioRef.current = null; };
+    audio.play();
+    sectionAudioRef.current = audio;
+    setPlayingSectionKey(key);
+  }, [playingSectionKey]);
+
   useEffect(() => {
     if (!id) return;
     const load = async () => {
