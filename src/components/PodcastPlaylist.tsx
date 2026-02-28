@@ -38,6 +38,7 @@ export default function PodcastPlaylist({ activityId }: { activityId: string }) 
         .select("id, recording_url, created_at, student_name")
         .eq("activity_id", activityId)
         .eq("section_key", "final")
+        .eq("status", "approved")
         .order("created_at", { ascending: false });
       setRecordings((data as FinalRecording[]) || []);
       setLoading(false);

@@ -162,7 +162,7 @@ export default function FinalPodcastBuilder({
       setFinalBlobUrl(null);
       setFinalBlob(null);
       setStudentName("");
-      toast.success("Podcast submitted to playlist! 🎉");
+      toast.success("Podcast submitted for approval! 🎉");
     } catch (e: any) {
       toast.error(e.message || "Failed to save");
     } finally {

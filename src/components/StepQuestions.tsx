@@ -111,6 +111,8 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
           Open Student Preview
         </Button>
       )}
+
+      {activityId && <SubmissionReview activityId={activityId} />}
     </div>
   );
 }
