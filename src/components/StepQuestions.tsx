@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Pencil, Check, Save, LayoutGrid } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Pencil, Check, Save, LayoutGrid, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -17,9 +18,11 @@ interface Props {
   onSave?: (data: QuestionsData) => void;
   onBack: () => void;
   isSaving: boolean;
+  activityId?: string;
 }
 
-export default function StepQuestions({ topic, data, onSave, onBack, isSaving }: Props) {
+export default function StepQuestions({ topic, data, onSave, onBack, isSaving, activityId }: Props) {
+  const navigate = useNavigate();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [formData, setFormData] = useState<QuestionsData>(data);
 
@@ -86,6 +89,16 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving }:
           </Button>
         )}
       </div>
+
+      {activityId && (
+        <Button
+          onClick={() => navigate(`/preview/${activityId}`)}
+          className="w-full h-14 text-lg rounded-xl font-bold bg-kid-blue hover:bg-kid-blue/90 gap-2"
+        >
+          <Eye className="h-5 w-5" />
+          Open Student Preview
+        </Button>
+      )}
     </div>
   );
 }

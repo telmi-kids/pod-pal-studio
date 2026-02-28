@@ -33,12 +33,14 @@ const Index = () => {
   const [questionsData, setQuestionsData] = useState<QuestionsData | null>(null);
   const [currentForm, setCurrentForm] = useState<FormData | null>(null);
   const [isViewingExisting, setIsViewingExisting] = useState(false);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
   const goToActivities = () => {
     setScreen("activities");
     setQuestionsData(null);
     setCurrentForm(null);
     setIsViewingExisting(false);
+    setSelectedActivityId(null);
   };
 
   const handleFormSubmit = async (formData: FormData, documentText: string) => {
@@ -131,6 +133,7 @@ const Index = () => {
       goodbye: activity.goodbye || "",
     });
     setIsViewingExisting(true);
+    setSelectedActivityId(activity.id);
     setScreen("questions");
   };
 
@@ -167,6 +170,7 @@ const Index = () => {
               onSave={isViewingExisting ? undefined : handleSave}
               onBack={goToActivities}
               isSaving={isSaving}
+              activityId={selectedActivityId || undefined}
             />
           )}
           {screen === "activities" && (
