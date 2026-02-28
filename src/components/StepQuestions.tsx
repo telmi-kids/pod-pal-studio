@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Check, Save } from "lucide-react";
+import { Pencil, Check, Save, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -14,7 +14,7 @@ interface QuestionsData {
 interface Props {
   topic: string;
   data: QuestionsData;
-  onSave: (data: QuestionsData) => void;
+  onSave?: (data: QuestionsData) => void;
   onBack: () => void;
   isSaving: boolean;
 }
@@ -46,14 +46,16 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving }:
         <div key={key} className={`rounded-xl border-2 p-4 ${color} transition-all`}>
           <div className="flex items-center justify-between mb-2">
             <span className="font-bold text-lg">{label}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setEditingField(editingField === key ? null : key)}
-              className="rounded-full"
-            >
-              {editingField === key ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-            </Button>
+            {onSave && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setEditingField(editingField === key ? null : key)}
+                className="rounded-full"
+              >
+                {editingField === key ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+              </Button>
+            )}
           </div>
           {editingField === key ? (
             <Textarea
@@ -69,17 +71,20 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving }:
       ))}
 
       <div className="flex gap-3 pt-2">
-        <Button onClick={onBack} variant="outline" className="flex-1 h-14 text-lg rounded-xl font-bold">
-          ← Back
+        <Button onClick={onBack} variant="outline" className="flex-1 h-14 text-lg rounded-xl font-bold gap-2">
+          <LayoutGrid className="h-5 w-5" />
+          Activities
         </Button>
-        <Button
-          onClick={() => onSave(formData)}
-          disabled={isSaving}
-          className="flex-1 h-14 text-lg rounded-xl font-bold bg-kid-green hover:bg-kid-green/90"
-        >
-          <Save className="mr-2 h-5 w-5" />
-          {isSaving ? "Saving..." : "Save Activity"}
-        </Button>
+        {onSave && (
+          <Button
+            onClick={() => onSave(formData)}
+            disabled={isSaving}
+            className="flex-1 h-14 text-lg rounded-xl font-bold bg-kid-green hover:bg-kid-green/90"
+          >
+            <Save className="mr-2 h-5 w-5" />
+            {isSaving ? "Saving..." : "Save Activity"}
+          </Button>
+        )}
       </div>
     </div>
   );
