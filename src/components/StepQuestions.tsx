@@ -86,7 +86,7 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
           <LayoutGrid className="h-5 w-5" />
           Activities
         </Button>
-        {onSave && (
+        {onSave && !isExisting && (
           <Button
             onClick={() => onSave(formData)}
             disabled={isSaving}
@@ -95,6 +95,9 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
             <Save className="mr-2 h-5 w-5" />
             {isSaving ? "Saving..." : "Save Activity"}
           </Button>
+        )}
+        {isSaving && isExisting && (
+          <span className="text-sm text-muted-foreground font-semibold self-center">Saving...</span>
         )}
       </div>
 
