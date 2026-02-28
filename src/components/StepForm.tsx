@@ -175,7 +175,7 @@ export default function StepForm({ onSubmit, isLoading }: Props) {
           </span>
           <input
             type="file"
-            accept=".txt,.pdf,.doc,.docx"
+            accept=".txt,.pdf,.doc,.docx,.md,.csv"
             className="hidden"
             onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
           />
