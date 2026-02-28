@@ -59,6 +59,30 @@ export type Database = {
         }
         Relationships: []
       }
+      training_materials: {
+        Row: {
+          content: string
+          created_at: string
+          file_name: string
+          file_url: string
+          id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          file_name: string
+          file_url: string
+          id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

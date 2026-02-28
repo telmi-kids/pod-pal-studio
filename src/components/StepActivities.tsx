@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Clock, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function StepActivities({ onNew, onSelect }: Props) {
+  const navigate = useNavigate();
   const [activities, setActivities] = useState<Tables<"activities">[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,14 +50,23 @@ export default function StepActivities({ onNew, onSelect }: Props) {
           <h1 className="text-3xl font-extrabold text-foreground">🎧 Activity Bank</h1>
           <p className="text-muted-foreground mt-1 text-base">Your saved podcast activities</p>
         </div>
-        <Button
-          onClick={onNew}
-          className="h-12 px-5 text-base font-bold rounded-xl bg-primary hover:bg-primary/90"
-        >
-          <Plus className="mr-1 h-5 w-5" /> New
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => navigate("/settings")}
+            className="h-12 w-12 rounded-xl"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Button
+            onClick={onNew}
+            className="h-12 px-5 text-base font-bold rounded-xl bg-primary hover:bg-primary/90"
+          >
+            <Plus className="mr-1 h-5 w-5" /> New
+          </Button>
+        </div>
       </div>
-
 
 
 

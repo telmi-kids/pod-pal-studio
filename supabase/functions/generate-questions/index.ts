@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,18 +14,36 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
+    // Fetch training materials from database
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data: materials } = await supabase
+      .from("training_materials")
+      .select("file_name, content")
+      .order("created_at", { ascending: false });
+
+    const trainingContext = materials && materials.length > 0
+      ? materials
+          .filter((m: any) => m.content && m.content.length > 0)
+          .map((m: any) => `--- ${m.file_name} ---\n${m.content}`)
+          .join("\n\n")
+      : "";
+
     const systemPrompt = `You are a friendly podcast coach for kids aged ${ageGroup}. 
-Given a podcast topic, genre, and optional document context, generate:
+Given a podcast topic, genre, and context materials, generate:
 1. A short, fun introduction paragraph (2-3 sentences)
 2. Exactly 3 interesting questions to ask the podcaster
 3. A short, cheerful goodbye message (1-2 sentences)
 
-Keep language simple and age-appropriate. Make questions engaging and open-ended.`;
+Keep language simple and age-appropriate. Make questions engaging and open-ended.
+${trainingContext ? `\nYou have the following training materials as background knowledge. Use them to inform your questions where relevant:\n\n${trainingContext}` : ""}`;
 
     const userPrompt = `Topic: ${topic}
 Genre: ${genre}
 Age Group: ${ageGroup}
-${documentText ? `\nDocument context:\n${documentText}` : ""}
+${documentText ? `\nAdditional document provided by the teacher:\n${documentText}` : ""}
 
 Generate the introduction, 3 questions, and goodbye.`;
 
