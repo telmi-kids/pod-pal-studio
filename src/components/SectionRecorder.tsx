@@ -51,14 +51,44 @@ export default function SectionRecorder({ activityId, sectionKey, existingRecord
     setIsRecording(false);
   };
 
+  const cleanAudio = async (blob: Blob): Promise<Blob> => {
+    const formData = new FormData();
+    formData.append("audio", blob, "recording.webm");
+
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/audio-noise-cancellation`,
+      {
+        method: "POST",
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      console.warn("Noise cancellation failed, using original audio");
+      return blob;
+    }
+
+    const cleanedBuffer = await response.arrayBuffer();
+    return new Blob([cleanedBuffer], { type: "audio/mpeg" });
+  };
+
   const saveRecording = async () => {
     if (!recordingBlob) return;
     setIsSaving(true);
     try {
-      const fileName = `recording-${activityId}-${sectionKey}-${Date.now()}.webm`;
+      // Run noise cancellation
+      toast.info("Cleaning audio... 🎧");
+      const cleanedBlob = await cleanAudio(recordingBlob);
+      const ext = cleanedBlob.type === "audio/mpeg" ? "mp3" : "webm";
+      const fileName = `recording-${activityId}-${sectionKey}-${Date.now()}.${ext}`;
+
       const { error: uploadErr } = await supabase.storage
         .from("recordings")
-        .upload(fileName, recordingBlob);
+        .upload(fileName, cleanedBlob);
       if (uploadErr) throw uploadErr;
 
       const { data: urlData } = supabase.storage
