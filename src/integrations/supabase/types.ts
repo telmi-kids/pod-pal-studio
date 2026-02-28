@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activities: {
+        Row: {
+          age_group: string
+          created_at: string
+          document_url: string | null
+          genre: string
+          goodbye: string | null
+          id: string
+          introduction: string | null
+          question_1: string | null
+          question_2: string | null
+          question_3: string | null
+          topic: string
+          voice_url: string | null
+        }
+        Insert: {
+          age_group: string
+          created_at?: string
+          document_url?: string | null
+          genre: string
+          goodbye?: string | null
+          id?: string
+          introduction?: string | null
+          question_1?: string | null
+          question_2?: string | null
+          question_3?: string | null
+          topic: string
+          voice_url?: string | null
+        }
+        Update: {
+          age_group?: string
+          created_at?: string
+          document_url?: string | null
+          genre?: string
+          goodbye?: string | null
+          id?: string
+          introduction?: string | null
+          question_1?: string | null
+          question_2?: string | null
+          question_3?: string | null
+          topic?: string
+          voice_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
