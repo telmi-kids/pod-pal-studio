@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Play, Pause, Volume2 } from "lucide-react";
+import { ArrowLeft, Play, Pause, Volume2, Share2, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { toast } from "sonner";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import SectionRecorder from "@/components/SectionRecorder";
 import FinalPodcastBuilder from "@/components/FinalPodcastBuilder";
+import PodcastPlaylist from "@/components/PodcastPlaylist";
 
 interface Recording {
   id: string;
@@ -21,16 +23,15 @@ export default function ChildPreview() {
   const [activity, setActivity] = useState<Tables<"activities"> | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Audio playback
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Per-section recordings (latest per section_key)
   const [sectionRecordings, setSectionRecordings] = useState<Record<string, Recording>>({});
 
-  // Section audio playback (TTS)
   const [playingSectionKey, setPlayingSectionKey] = useState<string | null>(null);
   const sectionAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const [sectionsOpen, setSectionsOpen] = useState(true);
 
   const playSectionAudio = useCallback((url: string, key: string) => {
     if (playingSectionKey === key && sectionAudioRef.current) {
@@ -63,13 +64,14 @@ export default function ChildPreview() {
       ]);
       setActivity(actRes.data);
 
-      // Keep latest recording per section_key
       const recs = (recRes.data as Recording[]) || [];
       const map: Record<string, Recording> = {};
       for (const r of recs) {
         if (!map[r.section_key]) map[r.section_key] = r;
       }
       setSectionRecordings(map);
+      // Collapse if final exists
+      if (map["final"]) setSectionsOpen(false);
       setLoading(false);
     };
     load();
@@ -88,10 +90,17 @@ export default function ChildPreview() {
   const handleRecordingSaved = (rec: Recording) => {
     setSectionRecordings((prev) => {
       const updated = { ...prev, [rec.section_key]: rec };
-      // Clear final if a section was re-recorded
       if (rec.section_key !== "final") delete updated["final"];
       return updated;
     });
+    // Collapse sections when final is saved
+    if (rec.section_key === "final") setSectionsOpen(false);
+  };
+
+  const copyLink = () => {
+    const url = `${window.location.origin}/preview/${id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard! 📋");
   };
 
   const ALL_SECTION_KEYS = ["introduction", "question_1", "question_2", "question_3", "goodbye"];
@@ -123,7 +132,7 @@ export default function ChildPreview() {
     { key: "goodbye", label: "👋 Goodbye", text: activity.goodbye, color: "bg-primary/10 border-primary", audioUrl: activity.goodbye_audio_url },
   ];
 
-  const renderSection = (section: { key: string; label: string; text: string | null; color: string; audioUrl: string | null }, showRecorder: boolean) => (
+  const renderSection = (section: { key: string; label: string; text: string | null; color: string; audioUrl: string | null }) => (
     <div key={section.key} className={`rounded-xl border-2 p-4 ${section.color}`}>
       <div className="flex items-center justify-between">
         <span className="font-bold text-lg">{section.label}</span>
@@ -139,7 +148,7 @@ export default function ChildPreview() {
         )}
       </div>
       <p className="text-base text-foreground/80 leading-relaxed mt-2">{section.text}</p>
-      {showRecorder && id && (
+      {id && (
         <SectionRecorder
           activityId={id}
           sectionKey={section.key}
@@ -165,6 +174,10 @@ export default function ChildPreview() {
         <span className="ml-auto text-sm text-muted-foreground font-semibold">
           Student View
         </span>
+        <Button variant="outline" size="sm" onClick={copyLink} className="rounded-full gap-1.5 font-semibold">
+          <Share2 className="h-4 w-4" />
+          Share
+        </Button>
       </header>
 
       <main className="flex items-start justify-center p-4 pt-6">
@@ -195,22 +208,34 @@ export default function ChildPreview() {
             </div>
           )}
 
-          {/* Introduction */}
-          {renderSection(otherSections[0], true)}
-
-          {/* Questions with recorders */}
-          {questionSections.map((s) => renderSection(s, true))}
-
-          {/* Goodbye */}
-          {renderSection(otherSections[1], true)}
-
-          {/* Final Podcast Builder */}
+          {/* Final Podcast Builder — shown at top */}
           <FinalPodcastBuilder
             activityId={id!}
             sectionRecordings={sectionRecordings}
             allSectionKeys={ALL_SECTION_KEYS}
             onFinalSaved={handleRecordingSaved}
           />
+
+          {/* Collapsible Recording Sections */}
+          <Collapsible open={sectionsOpen} onOpenChange={setSectionsOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between h-12 rounded-xl font-bold text-base border-2"
+              >
+                {sectionsOpen ? "Hide Recording Sections" : "Show Recording Sections"}
+                {sectionsOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4 mt-4">
+              {renderSection(otherSections[0])}
+              {questionSections.map((s) => renderSection(s))}
+              {renderSection(otherSections[1])}
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Podcast Playlist */}
+          <PodcastPlaylist activityId={id!} />
         </div>
       </main>
     </div>
