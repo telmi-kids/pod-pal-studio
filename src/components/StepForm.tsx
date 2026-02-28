@@ -68,14 +68,30 @@ export default function StepForm({ onSubmit, isLoading }: Props) {
     });
   };
 
+  const readFileAsBase64 = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string || "";
+        // Strip the data URL prefix to get raw base64
+        const base64 = result.split(",")[1] || "";
+        resolve(base64);
+      };
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = async () => {
     if (!topic || !ageGroup || !genre) {
       toast.error("Please fill in all fields!");
       return;
     }
 
-    const documentText = documentFile ? await readDocumentText(documentFile) : "";
-    onSubmit({ topic, ageGroup, genre, voiceBlob, documentFile }, documentText);
+    const isPdf = documentFile?.type === "application/pdf";
+    const documentText = documentFile && !isPdf ? await readDocumentText(documentFile) : "";
+    const documentBase64 = documentFile && isPdf ? await readFileAsBase64(documentFile) : undefined;
+    onSubmit({ topic, ageGroup, genre, voiceBlob, documentFile }, documentText, documentBase64);
   };
 
   return (
