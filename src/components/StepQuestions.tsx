@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Pencil, Check, Save, LayoutGrid, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/useAuth";
 import SubmissionReview from "@/components/SubmissionReview";
 
 interface QuestionsData {
@@ -20,13 +21,16 @@ interface Props {
   onBack: () => void;
   isSaving: boolean;
   activityId?: string;
+  activityUserId?: string | null;
 }
 
-export default function StepQuestions({ topic, data, onSave, onBack, isSaving, activityId }: Props) {
+export default function StepQuestions({ topic, data, onSave, onBack, isSaving, activityId, activityUserId }: Props) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [formData, setFormData] = useState<QuestionsData>(data);
   const isExisting = !!activityId;
+  const isCreator = !!user && !!activityUserId && user.id === activityUserId;
 
   const closeEdit = (key: string) => {
     setEditingField(null);
@@ -112,7 +116,7 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
         </Button>
       )}
 
-      {activityId && <SubmissionReview activityId={activityId} />}
+      {activityId && isCreator && <SubmissionReview activityId={activityId} />}
     </div>
   );
 }
