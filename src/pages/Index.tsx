@@ -170,6 +170,8 @@ const Index = () => {
               onSave={isViewingExisting ? undefined : handleSave}
               onBack={goToActivities}
               isSaving={isSaving}
+              activityId={selectedActivityId || undefined}
+            />
             />
           )}
           {screen === "activities" && (
