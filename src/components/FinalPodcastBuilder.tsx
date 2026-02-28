@@ -143,10 +143,12 @@ export default function FinalPodcastBuilder({
         .from("recordings")
         .getPublicUrl(fileName);
 
+      const trimmedName = studentName.trim() || "Student";
       const { error: insertErr } = await supabase.from("recordings").insert({
         activity_id: activityId,
         recording_url: urlData.publicUrl,
         section_key: "final",
+        student_name: trimmedName,
       } as any);
       if (insertErr) throw insertErr;
 
@@ -157,7 +159,10 @@ export default function FinalPodcastBuilder({
         section_key: "final",
       };
       onFinalSaved(newRec);
-      toast.success("Final podcast saved! 🎉");
+      setFinalBlobUrl(null);
+      setFinalBlob(null);
+      setStudentName("");
+      toast.success("Podcast submitted to playlist! 🎉");
     } catch (e: any) {
       toast.error(e.message || "Failed to save");
     } finally {
