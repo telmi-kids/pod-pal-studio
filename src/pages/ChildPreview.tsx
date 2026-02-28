@@ -86,8 +86,15 @@ export default function ChildPreview() {
   };
 
   const handleRecordingSaved = (rec: Recording) => {
-    setSectionRecordings((prev) => ({ ...prev, [rec.section_key]: rec }));
+    setSectionRecordings((prev) => {
+      const updated = { ...prev, [rec.section_key]: rec };
+      // Clear final if a section was re-recorded
+      if (rec.section_key !== "final") delete updated["final"];
+      return updated;
+    });
   };
+
+  const ALL_SECTION_KEYS = ["introduction", "question_1", "question_2", "question_3", "goodbye"];
 
   if (loading) {
     return (
