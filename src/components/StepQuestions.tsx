@@ -61,7 +61,7 @@ export default function StepQuestions({ topic, data, onSave, onBack, isSaving, a
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setEditingField(editingField === key ? null : key)}
+                onClick={() => editingField === key ? closeEdit(key) : setEditingField(key)}
                 className="rounded-full"
               >
                 {editingField === key ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
