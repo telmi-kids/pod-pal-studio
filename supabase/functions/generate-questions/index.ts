@@ -21,15 +21,38 @@ serve(async (req) => {
 
     const { data: materials } = await supabase
       .from("training_materials")
-      .select("file_name, content")
+      .select("file_name, content, file_url")
       .order("created_at", { ascending: false });
 
-    const trainingContext = materials && materials.length > 0
-      ? materials
-          .filter((m: any) => m.content && m.content.length > 0)
+    const textMaterials = (materials || []).filter((m: any) => m.content && m.content.length > 0);
+    const pdfMaterials = (materials || []).filter((m: any) => (!m.content || m.content.length === 0) && m.file_url);
+
+    const trainingContext = textMaterials.length > 0
+      ? textMaterials
           .map((m: any) => `--- ${m.file_name} ---\n${m.content}`)
           .join("\n\n")
       : "";
+
+    // Fetch PDF training materials as base64
+    const pdfParts: any[] = [];
+    for (const m of pdfMaterials) {
+      try {
+        const res = await fetch(m.file_url);
+        if (res.ok) {
+          const buf = await res.arrayBuffer();
+          const bytes = new Uint8Array(buf);
+          let binary = "";
+          for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+          const b64 = btoa(binary);
+          pdfParts.push({
+            type: "image_url",
+            image_url: { url: `data:application/pdf;base64,${b64}` },
+          });
+        }
+      } catch (e) {
+        console.error(`Failed to fetch training PDF ${m.file_name}:`, e);
+      }
+    }
 
     const systemPrompt = `You are a friendly podcast coach for kids aged ${ageGroup}. 
 Given a podcast topic, genre, and context materials, generate:
