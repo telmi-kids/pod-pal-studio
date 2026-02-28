@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 import SectionRecorder from "@/components/SectionRecorder";
+import FinalPodcastBuilder from "@/components/FinalPodcastBuilder";
 
 interface Recording {
   id: string;
