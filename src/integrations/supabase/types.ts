@@ -80,7 +80,9 @@ export type Database = {
           created_at: string
           id: string
           recording_url: string
+          rejection_comment: string | null
           section_key: string
+          status: string
           student_name: string | null
         }
         Insert: {
@@ -88,7 +90,9 @@ export type Database = {
           created_at?: string
           id?: string
           recording_url: string
+          rejection_comment?: string | null
           section_key?: string
+          status?: string
           student_name?: string | null
         }
         Update: {
@@ -96,7 +100,9 @@ export type Database = {
           created_at?: string
           id?: string
           recording_url?: string
+          rejection_comment?: string | null
           section_key?: string
+          status?: string
           student_name?: string | null
         }
         Relationships: [
