@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Play, Pause, Mic, Square, Save } from "lucide-react";
+import { ArrowLeft, Play, Pause, Mic, Square, Save, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -32,6 +32,30 @@ export default function ChildPreview() {
 
   // Past recordings
   const [pastRecordings, setPastRecordings] = useState<Recording[]>([]);
+
+  // Section audio playback (TTS)
+  const [playingSectionKey, setPlayingSectionKey] = useState<string | null>(null);
+  const sectionAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const playSectionAudio = useCallback((url: string, key: string) => {
+    // Stop current if playing same
+    if (playingSectionKey === key && sectionAudioRef.current) {
+      sectionAudioRef.current.pause();
+      sectionAudioRef.current = null;
+      setPlayingSectionKey(null);
+      return;
+    }
+    // Stop previous
+    if (sectionAudioRef.current) {
+      sectionAudioRef.current.pause();
+      sectionAudioRef.current = null;
+    }
+    const audio = new Audio(url);
+    audio.onended = () => { setPlayingSectionKey(null); sectionAudioRef.current = null; };
+    audio.play();
+    sectionAudioRef.current = audio;
+    setPlayingSectionKey(key);
+  }, [playingSectionKey]);
 
   useEffect(() => {
     if (!id) return;
@@ -145,11 +169,11 @@ export default function ChildPreview() {
   }
 
   const sections = [
-    { label: "🎬 Introduction", text: activity.introduction, color: "bg-kid-blue/10 border-kid-blue" },
-    { label: "❓ Question 1", text: activity.question_1, color: "bg-kid-green/10 border-kid-green" },
-    { label: "❓ Question 2", text: activity.question_2, color: "bg-kid-pink/10 border-kid-pink" },
-    { label: "❓ Question 3", text: activity.question_3, color: "bg-accent/10 border-accent" },
-    { label: "👋 Goodbye", text: activity.goodbye, color: "bg-primary/10 border-primary" },
+    { key: "introduction", label: "🎬 Introduction", text: activity.introduction, color: "bg-kid-blue/10 border-kid-blue", audioUrl: (activity as any).introduction_audio_url },
+    { key: "question_1", label: "❓ Question 1", text: activity.question_1, color: "bg-kid-green/10 border-kid-green", audioUrl: (activity as any).question_1_audio_url },
+    { key: "question_2", label: "❓ Question 2", text: activity.question_2, color: "bg-kid-pink/10 border-kid-pink", audioUrl: (activity as any).question_2_audio_url },
+    { key: "question_3", label: "❓ Question 3", text: activity.question_3, color: "bg-accent/10 border-accent", audioUrl: (activity as any).question_3_audio_url },
+    { key: "goodbye", label: "👋 Goodbye", text: activity.goodbye, color: "bg-primary/10 border-primary", audioUrl: (activity as any).goodbye_audio_url },
   ];
 
   return (
@@ -198,9 +222,21 @@ export default function ChildPreview() {
           )}
 
           {/* Questions */}
-          {sections.map(({ label, text, color }, i) => (
-            <div key={i} className={`rounded-xl border-2 p-4 ${color}`}>
-              <span className="font-bold text-lg">{label}</span>
+          {sections.map(({ key, label, text, color, audioUrl }) => (
+            <div key={key} className={`rounded-xl border-2 p-4 ${color}`}>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-lg">{label}</span>
+                {audioUrl && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => playSectionAudio(audioUrl, key)}
+                    className={`rounded-full h-9 w-9 p-0 ${playingSectionKey === key ? "text-primary animate-pulse" : "text-muted-foreground"}`}
+                  >
+                    <Volume2 className="h-5 w-5" />
+                  </Button>
+                )}
+              </div>
               <p className="text-base text-foreground/80 leading-relaxed mt-2">{text}</p>
             </div>
           ))}

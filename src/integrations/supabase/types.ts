@@ -21,11 +21,16 @@ export type Database = {
           document_url: string | null
           genre: string
           goodbye: string | null
+          goodbye_audio_url: string | null
           id: string
           introduction: string | null
+          introduction_audio_url: string | null
           question_1: string | null
+          question_1_audio_url: string | null
           question_2: string | null
+          question_2_audio_url: string | null
           question_3: string | null
+          question_3_audio_url: string | null
           topic: string
           voice_url: string | null
         }
@@ -35,11 +40,16 @@ export type Database = {
           document_url?: string | null
           genre: string
           goodbye?: string | null
+          goodbye_audio_url?: string | null
           id?: string
           introduction?: string | null
+          introduction_audio_url?: string | null
           question_1?: string | null
+          question_1_audio_url?: string | null
           question_2?: string | null
+          question_2_audio_url?: string | null
           question_3?: string | null
+          question_3_audio_url?: string | null
           topic: string
           voice_url?: string | null
         }
@@ -49,11 +59,16 @@ export type Database = {
           document_url?: string | null
           genre?: string
           goodbye?: string | null
+          goodbye_audio_url?: string | null
           id?: string
           introduction?: string | null
+          introduction_audio_url?: string | null
           question_1?: string | null
+          question_1_audio_url?: string | null
           question_2?: string | null
+          question_2_audio_url?: string | null
           question_3?: string | null
+          question_3_audio_url?: string | null
           topic?: string
           voice_url?: string | null
         }
